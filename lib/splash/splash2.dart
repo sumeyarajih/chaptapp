@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:polychat/auth/signup.dart';
 import 'package:polychat/contants/text_style.dart';
 import '../contants/color.dart';
 import '../widgets/background_decoration.dart';
@@ -93,7 +94,14 @@ class SplashScreen2 extends StatelessWidget {
                     SizedBox(
                       width: screenWidth * 0.7,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) =>  SignupScreen(),
+          ),
+        );
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           foregroundColor: AppColors.secondary,
