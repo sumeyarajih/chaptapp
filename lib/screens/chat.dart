@@ -1,10 +1,11 @@
+
 import 'package:flutter/material.dart';
 import 'package:polychat/screens/profile.dart';
+import 'package:polychat/screens/inbox.dart'; // Import the inbox page
 import 'package:polychat/widgets/button_navbar.dart';
 import '../contants/color.dart';
 import '../contants/text_style.dart';
 import '../widgets/background_decoration.dart';
-
 
 class ChatPage extends StatefulWidget {
   const ChatPage({Key? key}) : super(key: key);
@@ -17,11 +18,17 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
   int _currentIndex = 1; // Chat is selected in bottom nav
+  int _selectedTab = 1; // Default to "All" tab
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(() {
+      setState(() {
+        _selectedTab = _tabController.index;
+      });
+    });
   }
 
   @override
@@ -36,6 +43,7 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
       body: BackgroundDecoration(
         child: SafeArea(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // App Bar
               _buildAppBar(),
@@ -43,19 +51,9 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
               // Search Bar
               _buildSearchBar(),
               
-              // Tabs
-              _buildTabs(),
-              
-              // Tab Content
+              // Tab Container (Main container touching edges)
               Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildFilterContactsTab(),
-                    _buildAllMessagesTab(),
-                    _buildMissedMessagesTab(),
-                  ],
-                ),
+                child: _buildMainContainer(),
               ),
             ],
           ),
@@ -83,28 +81,6 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColors.secondary,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 5,
-                    spreadRadius: 1,
-                  ),
-                ],
-              ),
-              child: Icon(
-                Icons.arrow_back,
-                color: AppColors.primary,
-                size: 24,
-              ),
-            ),
-          ),
           Text(
             "Messages",
             style: AppTextStyle.splashText.copyWith(
@@ -113,25 +89,18 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
               color: AppColors.secondary,
             ),
           ),
-          Container(
-            width: 45,
-            height: 45,
-            decoration: BoxDecoration(
-              color: AppColors.secondary,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 5,
-                  spreadRadius: 1,
-                ),
-              ],
-            ),
-            child: IconButton(
-              onPressed: () {},
-              icon: Icon(
+            IconButton(
+            onPressed: () {},
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
                 Icons.more_vert,
-                color: AppColors.primary,
+                color: AppColors.secondary,
+                size: 24,
               ),
             ),
           ),
@@ -143,7 +112,7 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
   Widget _buildSearchBar() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
         color: AppColors.secondary,
         borderRadius: BorderRadius.circular(15),
@@ -161,6 +130,7 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
           Icon(
             Icons.search,
             color: AppColors.primary.withOpacity(0.5),
+            size: 22,
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -168,7 +138,10 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: "Search messages...",
-                hintStyle: TextStyle(color: AppColors.textPrimary.withOpacity(0.5)),
+                hintStyle: TextStyle(
+                  color: AppColors.textPrimary.withOpacity(0.5),
+                  fontSize: 16,
+                ),
                 border: InputBorder.none,
               ),
               style: AppTextStyle.splashText.copyWith(
@@ -184,6 +157,7 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
             icon: Icon(
               Icons.clear,
               color: AppColors.primary.withOpacity(0.5),
+              size: 20,
             ),
           ),
         ],
@@ -191,44 +165,120 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
     );
   }
 
-  Widget _buildTabs() {
+  Widget _buildMainContainer() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 10),
       decoration: BoxDecoration(
         color: AppColors.secondary,
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            spreadRadius: 2,
-            offset: const Offset(0, 3),
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 20,
+            spreadRadius: 5,
+            offset: const Offset(0, -5),
           ),
         ],
       ),
-      child: TabBar(
-        controller: _tabController,
-        indicator: BoxDecoration(
-          color: AppColors.primary,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        labelColor: AppColors.secondary,
-        unselectedLabelColor: AppColors.primary,
-        labelStyle: AppTextStyle.splashText.copyWith(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-        ),
-        unselectedLabelStyle: AppTextStyle.splashText.copyWith(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-        ),
-        tabs: const [
-          Tab(text: "Contacts"),
-          Tab(text: "All"),
-          Tab(text: "Missed"),
+      child: Column(
+        children: [
+          // Tabs inside the main container
+          Padding(
+            padding: const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 15),
+            child: Container(
+              height: 45,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _buildTabItem(0, "Contacts"),
+                  ),
+                  Container(
+                    width: 1,
+                    height: 25,
+                    color: AppColors.primary.withOpacity(0.2),
+                  ),
+                  Expanded(
+                    child: _buildTabItem(1, "All"),
+                  ),
+                  Container(
+                    width: 1,
+                    height: 25,
+                    color: AppColors.primary.withOpacity(0.2),
+                  ),
+                  Expanded(
+                    child: _buildTabItem(2, "Missed"),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          // Tab Content
+          Expanded(
+            child: IndexedStack(
+              index: _selectedTab,
+              children: [
+                _buildFilterContactsTab(),
+                _buildAllMessagesTab(),
+                _buildMissedMessagesTab(),
+              ],
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  Widget _buildTabItem(int index, String label) {
+    bool isSelected = _selectedTab == index;
+    
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedTab = index;
+          _tabController.animateTo(index);
+        });
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary : Colors.transparent,
+          borderRadius: _getTabBorderRadius(index),
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: AppTextStyle.splashText.copyWith(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: isSelected ? AppColors.secondary : AppColors.primary,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  BorderRadius _getTabBorderRadius(int index) {
+    if (index == 0) {
+      return const BorderRadius.only(
+        topLeft: Radius.circular(12),
+        bottomLeft: Radius.circular(12),
+      );
+    } else if (index == 2) {
+      return const BorderRadius.only(
+        topRight: Radius.circular(12),
+        bottomRight: Radius.circular(12),
+      );
+    }
+    return BorderRadius.zero;
   }
 
   Widget _buildFilterContactsTab() {
@@ -238,98 +288,132 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
       {'name': 'Jaylon Franci', 'lastSeen': 'Online', 'hasStory': true},
       {'name': 'Tatiana Dorwart', 'lastSeen': '1 hour ago', 'hasStory': false},
       {'name': 'Terry Bergson', 'lastSeen': 'Yesterday', 'hasStory': true},
+      {'name': 'Sarah Johnson', 'lastSeen': '5 min ago', 'hasStory': false},
+      {'name': 'Michael Brown', 'lastSeen': 'Just now', 'hasStory': true},
+      {'name': 'Emma Wilson', 'lastSeen': '30 min ago', 'hasStory': false},
     ];
 
     return ListView.builder(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       itemCount: contacts.length,
       itemBuilder: (context, index) {
         final contact = contacts[index];
-        return Container(
-          margin: const EdgeInsets.only(bottom: 15),
-          padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(
-            color: AppColors.secondary,
-            borderRadius: BorderRadius.circular(15),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 5,
-                spreadRadius: 1,
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => InboxPage(
+                  contactName: contact['name'] as String,
+                  contactInitials: _getInitials(contact['name'] as String),
+                ),
               ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Stack(
-                children: [
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    child: Center(
-                      child: Text(
-                        _getInitials(contact['name'] as String),
-                        style: AppTextStyle.splashText.copyWith(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (contact['hasStory'] as bool)
-                    Positioned(
-                      right: 0,
-                      bottom: 0,
-                      child: Container(
-                        width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: AppColors.secondary, width: 2),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(width: 15),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            );
+          },
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 4,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Stack(
                   children: [
-                    Text(
-                      contact['name'] as String,
-                      style: AppTextStyle.splashText.copyWith(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                    Container(
+                      width: 45,
+                      height: 45,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(22.5),
+                      ),
+                      child: Center(
+                        child: Text(
+                          _getInitials(contact['name'] as String),
+                          style: AppTextStyle.splashText.copyWith(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primary,
+                          ),
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      contact['lastSeen'] as String,
-                      style: AppTextStyle.splashText.copyWith(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.textPrimary.withOpacity(0.6),
+                    if (contact['hasStory'] as bool)
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(color: AppColors.secondary, width: 2),
+                          ),
+                        ),
                       ),
-                    ),
                   ],
                 ),
-              ),
-              IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.chat_bubble_outline,
-                  color: AppColors.primary,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        contact['name'] as String,
+                        style: AppTextStyle.splashText.copyWith(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        contact['lastSeen'] as String,
+                        style: AppTextStyle.splashText.copyWith(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.textPrimary.withOpacity(0.6),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => InboxPage(
+                          contactName: contact['name'] as String,
+                          contactInitials: _getInitials(contact['name'] as String),
+                        ),
+                      ),
+                    );
+                  },
+                  icon: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.chat_bubble_outline,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -342,111 +426,128 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
       {'name': 'Alfredo Saris', 'message': 'Meeting at 3 PM', 'time': '09:30 AM', 'unread': 0},
       {'name': 'Jaylon Franci', 'message': 'Thanks for your help!', 'time': 'Yesterday', 'unread': 1},
       {'name': 'Tatiana Dorwart', 'message': 'Check this out', 'time': '2 days ago', 'unread': 0},
+      {'name': 'Terry Bergson', 'message': 'Same here!', 'time': '3 days ago', 'unread': 3},
+      {'name': 'Sarah Johnson', 'message': 'See you tomorrow', 'time': '10:30 AM', 'unread': 0},
+      {'name': 'Michael Brown', 'message': 'Can we reschedule?', 'time': '11:00 AM', 'unread': 1},
+      {'name': 'Emma Wilson', 'message': 'Great work on the project!', 'time': 'Yesterday', 'unread': 0},
     ];
 
     return ListView.builder(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       itemCount: messages.length,
       itemBuilder: (context, index) {
         final message = messages[index];
-        return Container(
-          margin: const EdgeInsets.only(bottom: 15),
-          padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(
-            color: AppColors.secondary,
-            borderRadius: BorderRadius.circular(15),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 5,
-                spreadRadius: 1,
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(25),
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => InboxPage(
+                  contactName: message['name'] as String,
+                  contactInitials: _getInitials(message['name'] as String),
                 ),
-                child: Center(
-                  child: Text(
-                    _getInitials(message['name'] as String),
-                    style: AppTextStyle.splashText.copyWith(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.primary,
+              ),
+            );
+          },
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 4,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 45,
+                  height: 45,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(22.5),
+                  ),
+                  child: Center(
+                    child: Text(
+                      _getInitials(message['name'] as String),
+                      style: AppTextStyle.splashText.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 15),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          message['name'] as String,
-                          style: AppTextStyle.splashText.copyWith(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                        Text(
-                          message['time'] as String,
-                          style: AppTextStyle.splashText.copyWith(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.textPrimary.withOpacity(0.5),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            message['message'] as String,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            message['name'] as String,
                             style: AppTextStyle.splashText.copyWith(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.textPrimary.withOpacity(0.6),
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                        if ((message['unread'] as int) > 0)
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary,
-                              borderRadius: BorderRadius.circular(10),
+                          Text(
+                            message['time'] as String,
+                            style: AppTextStyle.splashText.copyWith(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textPrimary.withOpacity(0.5),
                             ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 3),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
                             child: Text(
-                              message['unread'].toString(),
-                              style: TextStyle(
-                                color: AppColors.secondary,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
+                              message['message'] as String,
+                              style: AppTextStyle.splashText.copyWith(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.textPrimary.withOpacity(0.6),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if ((message['unread'] as int) > 0)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                message['unread'].toString(),
+                                style: TextStyle(
+                                  color: AppColors.secondary,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
-                          ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
@@ -455,48 +556,52 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
 
   Widget _buildMissedMessagesTab() {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              color: AppColors.secondary,
-              borderRadius: BorderRadius.circular(50),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  spreadRadius: 2,
-                ),
-              ],
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(50),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: Icon(
+                Icons.notifications_off,
+                color: AppColors.primary,
+                size: 50,
+              ),
             ),
-            child: Icon(
-              Icons.notifications_off,
-              color: AppColors.primary,
-              size: 50,
+            const SizedBox(height: 20),
+            Text(
+              "No Missed Messages",
+              style: AppTextStyle.splashText.copyWith(
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: AppColors.primary,
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            "No Missed Messages",
-            style: AppTextStyle.splashText.copyWith(
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-              color: AppColors.primary,
+            const SizedBox(height: 10),
+            Text(
+              "You're all caught up with your conversations!",
+              textAlign: TextAlign.center,
+              style: AppTextStyle.splashText.copyWith(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: AppColors.textPrimary.withOpacity(0.6),
+              ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            "You're all caught up!",
-            style: AppTextStyle.splashText.copyWith(
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-              color: AppColors.textPrimary.withOpacity(0.6),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

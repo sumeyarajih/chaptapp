@@ -1,3 +1,5 @@
+
+// import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:polychat/screens/chat.dart';
 import 'package:polychat/screens/home.dart';
@@ -15,44 +17,59 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   int _currentIndex = 2; // Profile is selected in bottom nav
-  bool _isEditing = false;
-  final TextEditingController _nameController = TextEditingController(text: "Ben");
-  final TextEditingController _emailController = TextEditingController(text: "ben@example.com");
-  final TextEditingController _phoneController = TextEditingController(text: "+1 234 567 8900");
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BackgroundDecoration(
-        child: SafeArea(
-          child: Column(
+      body: Stack(
+        children: [
+          // Full background decoration
+          Positioned.fill(
+            child: BackgroundDecoration(
+              child: Container(),
+            ),
+          ),
+          // Main content
+          Column(
             children: [
-              // App Bar
-              _buildAppBar(),
-              
-              // Profile Info
+              // Top section with profile
+              Stack(
+                children: [
+                  SizedBox(
+                    height: 280,
+                    child: Container(), // Empty container for top section
+                  ),
+                  SafeArea(
+                    child: Column(
+                      children: [
+                        // App Bar
+                        _buildAppBar(),
+                        // Centered Profile Info
+                        _buildCenteredProfileHeader(),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              // Bottom white section - FULL HEIGHT WHITE BACKGROUND
               Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      _buildProfileHeader(),
-                      _buildProfileInfo(),
-                      _buildSettingsOptions(),
-                    ],
+                child: Container(
+                  color: Colors.white, // Solid white to cover black background
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        _buildAccountSection(),
+                        _buildNotificationSection(),
+                        const SizedBox(height: 40),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ],
           ),
-        ),
+        ],
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
         currentIndex: _currentIndex,
@@ -76,332 +93,243 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColors.secondary,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 5,
-                    spreadRadius: 1,
-                  ),
-                ],
-              ),
-              child: Icon(
-                Icons.arrow_back,
-                color: AppColors.primary,
-                size: 24,
-              ),
-            ),
-          ),
           Text(
             "Profile",
             style: AppTextStyle.splashText.copyWith(
               fontSize: 24,
               fontWeight: FontWeight.w700,
-              color: AppColors.secondary,
+              color: Colors.white,
             ),
           ),
-          IconButton(
-            onPressed: () {
-              setState(() {
-                _isEditing = !_isEditing;
-              });
-            },
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColors.secondary,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 5,
-                    spreadRadius: 1,
-                  ),
-                ],
-              ),
-              child: Icon(
-                _isEditing ? Icons.check : Icons.edit,
-                color: AppColors.primary,
-                size: 24,
-              ),
-            ),
+          Container(
+            width: 48, // Placeholder for spacing
           ),
         ],
       ),
     );
   }
 
-  Widget _buildProfileHeader() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      padding: const EdgeInsets.all(25),
-      decoration: BoxDecoration(
-        color: AppColors.secondary,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 15,
-            spreadRadius: 3,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Stack(
-            alignment: Alignment.bottomRight,
-            children: [
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(60),
-                  border: Border.all(color: AppColors.primary, width: 3),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(60),
-                  child: Image.asset(
-                    'assets/images/profile.png',
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Center(
-                      child: Icon(
-                        Icons.person,
-                        color: AppColors.primary,
-                        size: 50,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Icon(
-                  Icons.camera_alt,
-                  color: AppColors.secondary,
-                  size: 20,
-                ),
+  Widget _buildCenteredProfileHeader() {
+    return Column(
+      children: [
+        // Profile Image
+        Container(
+          width: 120,
+          height: 120,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(60),
+            border: Border.all(color: Colors.white, width: 4),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 15,
+                spreadRadius: 2,
+                offset: const Offset(0, 5),
               ),
             ],
           ),
-          const SizedBox(height: 20),
-          Text(
-            "Ben",
-            style: AppTextStyle.splashText.copyWith(
-              fontSize: 28,
-              fontWeight: FontWeight.w700,
-              color: AppColors.primary,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(60),
+            child: Image.asset(
+              'assets/images/profile.png',
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Center(
+                child: Icon(
+                  Icons.person,
+                  color: AppColors.primary,
+                  size: 50,
+                ),
+              ),
             ),
           ),
-          const SizedBox(height: 5),
-          Text(
-            "Active Now",
-            style: AppTextStyle.splashText.copyWith(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: Colors.green,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProfileInfo() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      padding: const EdgeInsets.all(25),
-      decoration: BoxDecoration(
-        color: AppColors.secondary,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 15,
-            spreadRadius: 3,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Personal Information",
-            style: AppTextStyle.splashText.copyWith(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: AppColors.primary,
-            ),
-          ),
-          const SizedBox(height: 20),
-          _buildInfoField("Full Name", _nameController, Icons.person),
-          const SizedBox(height: 15),
-          _buildInfoField("Email", _emailController, Icons.email),
-          const SizedBox(height: 15),
-          _buildInfoField("Phone", _phoneController, Icons.phone),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoField(String label, TextEditingController controller, IconData icon) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+        ),
+        const SizedBox(height: 20),
+        // Name
         Text(
-          label,
+          "Stefani Wong",
           style: AppTextStyle.splashText.copyWith(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: AppColors.textPrimary.withOpacity(0.7),
+            fontSize: 28,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
           ),
         ),
         const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: AppColors.primary.withOpacity(0.3)),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    bottomLeft: Radius.circular(10),
-                  ),
-                ),
-                child: Icon(icon, color: AppColors.primary),
+        // Location
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.location_on,
+              color: Colors.white.withOpacity(0.8),
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              "Bahawepur, Pakistan",
+              style: AppTextStyle.splashText.copyWith(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                color: Colors.white.withOpacity(0.9),
               ),
-              Expanded(
-                child: _isEditing
-                    ? TextField(
-                        controller: controller,
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                        ),
-                        style: AppTextStyle.splashText.copyWith(
-                          fontSize: 16,
-                          color: AppColors.textPrimary,
-                        ),
-                      )
-                    : Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          controller.text,
-                          style: AppTextStyle.splashText.copyWith(
-                            fontSize: 16,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ],
     );
   }
 
-  Widget _buildSettingsOptions() {
-    final options = [
-      {'icon': Icons.notifications, 'title': 'Notifications', 'subtitle': 'Manage notifications'},
-      {'icon': Icons.security, 'title': 'Privacy', 'subtitle': 'Privacy settings'},
-      {'icon': Icons.help, 'title': 'Help & Support', 'subtitle': 'Get help'},
-      {'icon': Icons.logout, 'title': 'Logout', 'subtitle': 'Sign out from account'},
+  Widget _buildAccountSection() {
+    final accountItems = [
+      'Persupai Data',
+      'Property List',
+      'Blog',
     ];
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      padding: const EdgeInsets.all(25),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.secondary,
-        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 15,
-            spreadRadius: 3,
-            offset: const Offset(0, 5),
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            spreadRadius: 2,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Settings",
-            style: AppTextStyle.splashText.copyWith(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: AppColors.primary,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+            child: Text(
+              "Account",
+              style: AppTextStyle.splashText.copyWith(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: AppColors.primary,
+              ),
             ),
           ),
-          const SizedBox(height: 20),
-          ...options.map((option) => _buildSettingsItem(
-            option['icon'] as IconData,
-            option['title'] as String,
-            option['subtitle'] as String,
-          )),
+          ...accountItems.map((item) => _buildMenuItem(item, false)),
         ],
       ),
     );
   }
 
-  Widget _buildSettingsItem(IconData icon, String title, String subtitle) {
+  Widget _buildNotificationSection() {
+    final notificationItems = [
+      'Contact Us',
+      'Privacy Policy',
+      'Settings',
+    ];
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 15),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            spreadRadius: 2,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+            child: Text(
+              "Notification",
+              style: AppTextStyle.splashText.copyWith(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: AppColors.primary,
+              ),
+            ),
+          ),
+          ...notificationItems.map((item) => _buildMenuItem(item, true)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMenuItem(String title, bool isNotificationSection) {
+    IconData icon;
+    
+    // Assign icons based on menu item
+    switch (title) {
+      case 'Persupai Data':
+        icon = Icons.data_usage;
+        break;
+      case 'Property List':
+        icon = Icons.list;
+        break;
+      case 'Blog':
+        icon = Icons.article;
+        break;
+      case 'Contact Us':
+        icon = Icons.contact_mail;
+        break;
+      case 'Privacy Policy':
+        icon = Icons.privacy_tip;
+        break;
+      case 'Settings':
+        icon = Icons.settings;
+        break;
+      default:
+        icon = Icons.arrow_forward_ios;
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: title == 'Settings' || title == 'Blog' 
+            ? BorderSide.none 
+            : BorderSide(
+                color: Colors.grey.shade200,
+                width: 1,
+              ),
+        ),
+      ),
       child: ListTile(
-        contentPadding: EdgeInsets.zero,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         leading: Container(
-          width: 50,
-          height: 50,
+          width: 45,
+          height: 45,
           decoration: BoxDecoration(
             color: AppColors.primary.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(icon, color: AppColors.primary),
+          child: Icon(
+            icon,
+            color: AppColors.primary,
+            size: 24,
+          ),
         ),
         title: Text(
           title,
           style: AppTextStyle.splashText.copyWith(
-            fontSize: 16,
+            fontSize: 17,
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
           ),
         ),
-        subtitle: Text(
-          subtitle,
-          style: AppTextStyle.splashText.copyWith(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            color: AppColors.textPrimary.withOpacity(0.6),
-          ),
-        ),
         trailing: Icon(
           Icons.arrow_forward_ios,
-          color: AppColors.primary.withOpacity(0.5),
-          size: 20,
+          color: AppColors.textPrimary.withOpacity(0.5),
+          size: 18,
         ),
         onTap: () {
-          // Handle settings item tap
+          // Handle menu item tap
+          print('Tapped: $title');
         },
       ),
     );
