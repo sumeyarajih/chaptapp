@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "287922947207",
+    "project_id": "app-ploychat",
+    "storage_bucket": "app-ploychat.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:287922947207:android:ddee9b7220684269d26422",
+        "android_client_info": {
+          "package_name": "com.example.polychat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCI_q8oOXK4vyheCsS__4oGx3gjJVT4tHk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
