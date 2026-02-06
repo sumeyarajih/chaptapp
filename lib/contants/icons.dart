@@ -1,163 +1,146 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SocialIcons {
+  // Google icon using FontAwesome
   static Widget googleIcon({double size = 24, Color? color}) {
-    return Image.asset(
-      'assets/icons/google.png', // You'll need to add this asset
-      width: size,
-      height: size,
-      color: color,
-      errorBuilder: (context, error, stackTrace) {
-        return Icon(
-          Icons.g_mobiledata,
-          size: size,
-          color: color ?? Colors.red,
-        );
-      },
+    return FaIcon(
+      FontAwesomeIcons.google,
+      size: size,
+      color: color ?? const Color(0xFFDB4437), // Google red
     );
   }
 
+  // Facebook icon using FontAwesome
   static Widget facebookIcon({double size = 24, Color? color}) {
-    return Image.asset(
-      'assets/icons/facebook.png', // You'll need to add this asset
-      width: size,
-      height: size,
-      color: color,
-      errorBuilder: (context, error, stackTrace) {
-        return Icon(
-          Icons.facebook,
-          size: size,
-          color: color ?? const Color(0xFF1877F2),
-        );
-      },
+    return FaIcon(
+      FontAwesomeIcons.facebookF,
+      size: size,
+      color: color ?? const Color(0xFF1877F2), // Facebook blue
     );
   }
 
-  static Widget appleIcon({double size = 24, Color? color}) {
-    return Image.asset(
-      'assets/icons/apple.png', // You'll need to add this asset
-      width: size,
-      height: size,
-      color: color,
-      errorBuilder: (context, error, stackTrace) {
-        return Icon(
-          Icons.apple,
-          size: size,
-          color: color ?? Colors.black,
-        );
-      },
+  // Instagram icon using FontAwesome
+  static Widget instagramIcon({double size = 24, Color? color}) {
+    return FaIcon(
+      FontAwesomeIcons.instagram,
+      size: size,
+      color: color ?? const Color(0xFFE1306C), // Instagram pink
     );
   }
 
-  static Widget twitterIcon({double size = 24, Color? color}) {
-    return Image.asset(
-      'assets/icons/twitter.png', // You'll need to add this asset
-      width: size,
-      height: size,
-      color: color,
-      errorBuilder: (context, error, stackTrace) {
-        return Icon(
-          Icons.trending_up, // Fallback icon
-          size: size,
-          color: color ?? const Color(0xFF1DA1F2),
-        );
-      },
-    );
-  }
-
-  // Pre-styled social login buttons
-  static Widget googleButton({required VoidCallback onPressed, double size = 24}) {
-    return SocialLoginButton(
-      icon: googleIcon(size: size),
-      text: 'Continue with Google',
-      onPressed: onPressed,
-      backgroundColor: Colors.white,
-      textColor: Colors.black87,
-      borderColor: Colors.grey.shade300,
-    );
-  }
-
-  static Widget facebookButton({required VoidCallback onPressed, double size = 24}) {
-    return SocialLoginButton(
-      icon: facebookIcon(size: size),
-      text: 'Continue with Facebook',
-      onPressed: onPressed,
-      backgroundColor: const Color(0xFF1877F2),
-      textColor: Colors.white,
-    );
-  }
-
-  static Widget appleButton({required VoidCallback onPressed, double size = 24}) {
-    return SocialLoginButton(
-      icon: appleIcon(size: size),
-      text: 'Continue with Apple',
-      onPressed: onPressed,
-      backgroundColor: Colors.black,
-      textColor: Colors.white,
-    );
-  }
-
-  static Widget twitterButton({required VoidCallback onPressed, double size = 24}) {
-    return SocialLoginButton(
-      icon: twitterIcon(size: size),
-      text: 'Continue with Twitter',
-      onPressed: onPressed,
-      backgroundColor: const Color(0xFF1DA1F2),
-      textColor: Colors.white,
-    );
-  }
-}
-
-class SocialLoginButton extends StatelessWidget {
-  final Widget icon;
-  final String text;
-  final VoidCallback onPressed;
-  final Color backgroundColor;
-  final Color textColor;
-  final Color? borderColor;
-
-  const SocialLoginButton({
-    Key? key,
-    required this.icon,
-    required this.text,
-    required this.onPressed,
-    required this.backgroundColor,
-    required this.textColor,
-    this.borderColor,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: backgroundColor,
-        foregroundColor: textColor,
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: borderColor != null
-              ? BorderSide(color: borderColor!)
-              : BorderSide.none,
-        ),
-        elevation: 1,
-        shadowColor: Colors.black.withOpacity(0.1),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          icon,
-          const SizedBox(width: 12),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-              color: textColor,
+  // Social icon button with circular container
+  static Widget socialIconButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onPressed,
+    double size = 50,
+    double iconSize = 20,
+    Color backgroundColor = Colors.white,
+  }) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 6,
+              offset: const Offset(2, 2),
             ),
+          ],
+        ),
+        child: Center(
+          child: FaIcon(
+            icon,
+            color: color,
+            size: iconSize,
           ),
-        ],
+        ),
       ),
+    );
+  }
+
+  // Ready-to-use social icon buttons
+  static Widget googleIconButton({
+    required VoidCallback onPressed,
+    double size = 50,
+    double iconSize = 20,
+  }) {
+    return socialIconButton(
+      icon: FontAwesomeIcons.google,
+      color: const Color(0xFFDB4437),
+      onPressed: onPressed,
+      size: size,
+      iconSize: iconSize,
+    );
+  }
+
+  static Widget facebookIconButton({
+    required VoidCallback onPressed,
+    double size = 50,
+    double iconSize = 20,
+  }) {
+    return socialIconButton(
+      icon: FontAwesomeIcons.facebookF,
+      color: const Color(0xFF1877F2),
+      onPressed: onPressed,
+      size: size,
+      iconSize: iconSize,
+    );
+  }
+
+  static Widget instagramIconButton({
+    required VoidCallback onPressed,
+    double size = 50,
+    double iconSize = 20,
+  }) {
+    return socialIconButton(
+      icon: FontAwesomeIcons.instagram,
+      color: const Color(0xFFE1306C),
+      onPressed: onPressed,
+      size: size,
+      iconSize: iconSize,
+    );
+  }
+
+  // Social row for login screen
+  static Widget socialLoginRow({
+    required BuildContext context,
+    required VoidCallback onGooglePressed,
+    required VoidCallback onFacebookPressed,
+    required VoidCallback onInstagramPressed,
+    bool isSmallScreen = false,
+  }) {
+    final double size = isSmallScreen ? 40 : 50;
+    final double iconSize = isSmallScreen ? 16 : 20;
+    final double spacing = isSmallScreen ? 15 : 20;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        googleIconButton(
+          onPressed: onGooglePressed,
+          size: size,
+          iconSize: iconSize,
+        ),
+        SizedBox(width: spacing),
+        facebookIconButton(
+          onPressed: onFacebookPressed,
+          size: size,
+          iconSize: iconSize,
+        ),
+        SizedBox(width: spacing),
+        instagramIconButton(
+          onPressed: onInstagramPressed,
+          size: size,
+          iconSize: iconSize,
+        ),
+      ],
     );
   }
 }
